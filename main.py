@@ -16,8 +16,13 @@ def pintarMenu():
 # Si hay error, devuelve lista vacía
 def cargarFichero():
     lista_juegos = []  # Se crea antes del try para que siempre exista
+
+    ruta = input("Ruta del fichero (Enter para datos/videojuegos.csv): ").strip().strip('"')
+    if ruta == "":
+        ruta = os.path.join("datos", "videojuegos.csv")
+
     try:
-        with open(r'C:\Users\antonioma2411\Desktop\game_analytics\datos\videojuegos.csv', encoding="utf-8") as f:
+        with open(ruta, encoding="utf-8") as f:
             data = csv.reader(f)
             cabecera = next(data)  # Se salta la cabecera
 
@@ -69,8 +74,15 @@ def mostrarEstadisticas(lista_juegos):
 
 # Escribe un nuevo CSV con los datos transformados
 def exportarCSV(lista_juegos):
+    directorio = input("Directorio donde exportar (Enter para datos): ").strip().strip('"')
+    if directorio == "":
+        directorio = "datos"
+
     try:
-        with open(r'C:\Users\antonioma2411\Desktop\game_analytics\datos\videojuegos_transformado.csv', mode="w", encoding="utf-8", newline="") as f:
+        if not os.path.isdir(directorio):
+            raise FileNotFoundError
+
+        with open(os.path.join(directorio, "videojuegos_transformado.csv"), mode="w", encoding="utf-8", newline="") as f:
             escritor = csv.writer(f)
 
             cabecera = [
@@ -82,6 +94,8 @@ def exportarCSV(lista_juegos):
 
             for juego in lista_juegos:
                 escritor.writerow(juego.filaCSV())
+
+        print("Fichero exportado correctamente.")
 
     except FileNotFoundError:
         print("ERROR: No existe el fichero indicado.")
